@@ -23,10 +23,13 @@ clang -O2 \
   desktop/main.m \
   -o "$MACOS_DIR/WenJiao"
 
-echo "拷贝前端文件与动画资源..."
+echo "拷贝前端文件、图标与动画资源..."
 cp index.html "$RESOURCES_DIR/"
 cp -r css "$RESOURCES_DIR/"
 cp -r js "$RESOURCES_DIR/"
+if [ -f "desktop/AppIcon.icns" ]; then
+  cp desktop/AppIcon.icns "$RESOURCES_DIR/"
+fi
 
 echo "生成 App Info.plist..."
 cat << 'EOF' > "$CONTENTS_DIR/Info.plist"
@@ -40,6 +43,8 @@ cat << 'EOF' > "$CONTENTS_DIR/Info.plist"
     <string>com.wenjiao.app</string>
     <key>CFBundleName</key>
     <string>问筊</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>

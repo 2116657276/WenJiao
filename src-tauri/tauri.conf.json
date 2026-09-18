@@ -11,13 +11,9 @@
     "windows": [
       {
         "title": "问筊",
-        "width": 820,
-        "height": 760,
-        "minWidth": 680,
-        "minHeight": 620,
-        "maxWidth": 960,
-        "maxHeight": 920,
-        "resizable": true,
+        "width": 560,
+        "height": 780,
+        "resizable": false,
         "maximizable": false,
         "fullscreen": false,
         "center": true

@@ -4,12 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>问筊</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23FAF3DF%22 rx=%228%22/><text x=%2250%22 y=%2268%22 font-size=%2260%22 text-anchor=%22middle%22 fill=%22%23A73A2C%22 font-family=%22serif%22>筊</text></svg>">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 fill=%22%23F3F0E6%22 rx=%2212%22/><text x=%2250%22 y=%2268%22 font-size=%2260%22 text-anchor=%22middle%22 fill=%22%23A23A2D%22 font-family=%22serif%22>筊</text></svg>">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <main class="app-window" id="app">
-    <!-- 顶部标题栏 -->
+  <main class="app-window app-paper" id="app">
+    <!-- 顶部：标题与工具（单列纵向小窗，工具按钮不占视觉重量） -->
     <header class="app-header">
       <div class="title-group">
         <h1 class="app-title">问筊</h1>
@@ -39,18 +39,18 @@
       </div>
     </header>
 
-    <!-- 主工作区：单体宣纸流式排版，设计基准宽约 820px，最大 900px 居中 -->
+    <!-- 单列纵向工作区：模式 → 甲乙 → 三圣进度与筊杯 → 掷杯 → 定案 → 筊册 -->
     <div class="main-content">
-      <!-- 模式选择：浅米宣纸槽体 -->
-      <section class="mode-selector-wrap">
-        <div class="mode-selector segmented-control">
+      <!-- 模式选择：轻文字页签（覆盖一层极薄毛玻璃），无大卡片 -->
+      <section class="mode-selector-wrap paper-glass">
+        <div class="mode-selector">
           <button type="button" class="mode-tab active" id="tab-fair" data-mode="fair">
             <span class="mode-name">公平三圣</span>
-            <span class="mode-sub">三圣既成，则从甲；一杯有异，即归乙。</span>
+            <span class="mode-sub">三圣既成，则从甲<br>一杯有异，即归乙</span>
           </button>
           <button type="button" class="mode-tab" id="tab-traditional" data-mode="traditional">
             <span class="mode-name">传统模式</span>
-            <span class="mode-sub">圣则从甲，阴则归乙，笑则复掷。</span>
+            <span class="mode-sub">圣则从甲，阴则归乙<br>笑杯复掷</span>
           </button>
         </div>
       </section>
@@ -61,19 +61,19 @@
           <input type="checkbox" id="check-traditional-triple">
           <span>开启连续三圣</span>
         </label>
-        <span class="bias-tag">偏向乙项 (甲仅 12.5%)</span>
+        <span class="bias-tag">有异归乙 · 偏向乙项</span>
       </div>
 
-      <!-- 决策甲乙双签 (轻薄纸片卡片) -->
+      <!-- 决策甲乙：两块极薄毛玻璃纸签，朱砂小印，输入本身仍为透明 -->
       <section class="options-panel">
-        <div class="input-card">
+        <div class="input-card paper-glass">
           <div class="input-header">
             <span class="seal-tag">甲</span>
             <span class="input-desc">圣杯所向</span>
           </div>
           <input type="text" id="input-opt-a" class="option-input" value="是 / 行" placeholder="输入选项内容">
         </div>
-        <div class="input-card">
+        <div class="input-card paper-glass">
           <div class="input-header">
             <span class="seal-tag">乙</span>
             <span class="input-desc">未应所归</span>
@@ -82,48 +82,52 @@
         </div>
       </section>
 
-      <!-- 核心宣纸温润 3D 投掷台 -->
+      <!-- 筊杯舞台：与宣纸连续，仅中心微亮 -->
       <section class="stage-wrapper" id="stage-container">
         <div class="stage-3d-scene" id="stage-3d-scene"></div>
         <div class="stage-overlay">
-          <!-- 三圣铜钉 / 朱砂圆点状态 -->
+          <!-- 三圣进度：铜色空心圆 / 朱砂实心圆 -->
           <div class="progress-dots" id="progress-dots">
             <span class="dot" id="dot-1" title="一圣"></span>
             <span class="dot" id="dot-2" title="二圣"></span>
             <span class="dot" id="dot-3" title="三圣"></span>
           </div>
-          <!-- 当前状态标签 (轻薄纸片标签) -->
+          <!-- 案上状态墨字（直接写在纸面，无标牌方框） -->
           <div class="status-badge" id="status-badge">
             <span id="badge-text">案上静候 · 掷杯以决</span>
           </div>
         </div>
       </section>
 
-      <!-- 控制面板 -->
+      <!-- 控制区：掷杯 -->
       <section class="controls-panel">
-        <!-- 主操作：掷杯 (保留深朱砂实体色与微内高光) -->
         <button type="button" class="btn-primary" id="btn-action">
           <span id="btn-action-text">掷杯</span>
         </button>
-        <!-- 次级操作：重开新轮 (终局时显示，低视觉权重纸签) -->
         <button type="button" class="btn-secondary-action hidden" id="btn-next-round">
           <span>开始下一轮</span>
         </button>
         <div class="btn-tip" id="btn-tip">空格键掷杯 · 回车键开始下一轮</div>
       </section>
 
-      <!-- 终局印章决策宣告栏 (宣纸文书风格纸签) -->
-      <div class="decision-banner" id="decision-banner" style="display: none;">
-        <div class="banner-seal" id="banner-seal">
-          <span class="seal-char">定</span>
+      <!-- 定案区：固定高度 + 稍明显一层毛玻璃；投掷前为极淡空状态，投掷后为朱砂定印 -->
+      <div class="result-area paper-glass" id="result-area">
+        <div class="decision-banner" id="decision-banner" style="display: none;">
+          <div class="banner-seal" id="banner-seal">
+            <span class="seal-char">定</span>
+          </div>
+          <div class="banner-body">
+            <span class="banner-reason" id="banner-reason">三圣既成</span>
+            <span class="banner-result" id="banner-result-text">所决为甲：是 / 行</span>
+          </div>
         </div>
-        <div class="banner-body">
-          <span class="banner-reason" id="banner-reason">三圣既成</span>
-          <span class="banner-result" id="banner-result-text">所决为甲：是 / 行</span>
+        <div class="result-placeholder" id="result-placeholder">
+          <span class="ghost-seal">未</span>
+          <span class="ghost-text">尚无所定</span>
         </div>
       </div>
 
-      <!-- 筊册记录 (宣纸账册风格) -->
+      <!-- 筊册记录：占满窗口剩余高度，仅列表内部滚动 -->
       <section class="history-drawer">
         <div class="history-header">
           <span class="history-title">筊册记录</span>
@@ -151,13 +155,25 @@
       </div>
     </div>
 
+    <!-- 清空筊册确认弹窗 (网页内自定义 Modal，不依赖浏览器原生 confirm) -->
+    <div class="modal-overlay" id="clear-history-modal">
+      <div class="modal-box">
+        <h3 class="modal-title">清空筊册</h3>
+        <p class="modal-body">确定清空全部记录？<br>此操作不可恢复。</p>
+        <div class="modal-footer">
+          <button type="button" class="btn-modal-cancel" id="clear-btn-cancel">取消</button>
+          <button type="button" class="btn-modal-confirm" id="clear-btn-confirm">清空</button>
+        </div>
+      </div>
+    </div>
+
     <!-- 规则释例浮层 (包含完整概率与数学原理) -->
     <div class="modal-overlay" id="help-modal">
       <div class="modal-box">
         <h3 class="modal-title">问筊 · 释例</h3>
         <div class="modal-body">
           <p class="intro-p">本器为助解心怀两端之随机决断工具，纯取理则与概率，不假托神明迷信。</p>
-          
+
           <div class="rule-block">
             <div class="rule-row">
               <span class="rule-name">圣杯</span>
@@ -230,7 +246,7 @@
             </div>
             <div class="setting-segmented" id="volume-segmented">
               <button type="button" class="setting-tab" data-vol="soft">轻柔</button>
-              <button type="button" class="setting-tab active" data-vol="medium">适中</button>
+              <button type="button" class="setting-tab" data-vol="medium">适中</button>
               <button type="button" class="setting-tab" data-vol="loud">清亮</button>
             </div>
           </div>

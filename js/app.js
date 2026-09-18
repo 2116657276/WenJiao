@@ -51,6 +51,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const btnExport = document.getElementById('btn-export');
   const btnClearHistory = document.getElementById('btn-clear-history');
 
+  const clearHistoryModal = document.getElementById('clear-history-modal');
+  const clearBtnCancel = document.getElementById('clear-btn-cancel');
+  const clearBtnConfirm = document.getElementById('clear-btn-confirm');
+
   const confirmModal = document.getElementById('confirm-modal');
   const modalBtnCancel = document.getElementById('modal-btn-cancel');
   const modalBtnConfirm = document.getElementById('modal-btn-confirm');
@@ -390,6 +394,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // 快捷键支持 (Space 掷杯, Enter 下一轮)
   window.addEventListener('keydown', (e) => {
     if (e.target.tagName === 'INPUT') return;
+    // 有浮层打开时快捷键让位，避免在弹窗之上误触发掷杯 / 下一轮
+    if (document.querySelector('.modal-overlay.show')) return;
 
     if (e.code === 'Space') {
       e.preventDefault();
@@ -421,7 +427,13 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function renderHistory() {
-    if (!historyData || historyData.length === 0) {
+    const isEmpty = !historyData || historyData.length === 0;
+
+    // 空簿册：导出与清空置为不可用（同时彻底避开浏览器原生 alert/confirm）
+    btnExport.disabled = isEmpty;
+    btnClearHistory.disabled = isEmpty;
+
+    if (isEmpty) {
       historyList.innerHTML = `<div class="history-empty">案上尚无投掷墨迹</div>`;
       return;
     }
@@ -488,10 +500,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 导出与清空
   btnExport.addEventListener('click', () => {
-    if (!historyData || historyData.length === 0) {
-      alert('当前簿册无任何墨迹记录可导出。');
-      return;
-    }
+    if (!historyData || historyData.length === 0) return; // 空簿册不导出（按钮此时亦为禁用态）
     let text = '【问筊 · 筊册誊录】\n' + '------------------------------\n';
     historyData.forEach((h) => {
       const d = new Date(h.timestamp).toLocaleString();
@@ -512,11 +521,33 @@ document.addEventListener('DOMContentLoaded', () => {
     URL.revokeObjectURL(url);
   });
 
+  // 清空簿册：使用网页内自定义 Modal 二次确认
+  // (macOS WKWebView 未实现 WKUIDelegate，原生 confirm() 会失效，故不依赖浏览器对话框)
+  function closeClearHistoryModal() {
+    clearHistoryModal.classList.remove('show');
+  }
+
   btnClearHistory.addEventListener('click', () => {
-    if (confirm('是否确定清空全部案上墨迹？此操作不可复原。')) {
-      historyData = [];
-      saveHistory();
+    if (!historyData || historyData.length === 0) return;
+    clearHistoryModal.classList.add('show');
+  });
+
+  clearBtnCancel.addEventListener('click', closeClearHistoryModal);
+
+  clearHistoryModal.addEventListener('click', (e) => {
+    if (e.target === clearHistoryModal) closeClearHistoryModal();
+  });
+
+  clearBtnConfirm.addEventListener('click', () => {
+    // 明确的删除操作：清空内存数据并移除本地持久化记录，不依赖 saveHistory()
+    historyData = [];
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch (e) {
+      console.error('清空簿册失败：无法移除本地记录', e);
     }
+    renderHistory();
+    closeClearHistoryModal();
   });
 
   function escapeHtml(str) {

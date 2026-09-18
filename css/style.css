@@ -1,37 +1,26 @@
 /* css/style.css */
 /* ==========================================================================
-   圣杯抉择器 - 宣纸底色与轻薄纸片层级 (Translucent Xuan Paper Slips)
+   问筊 (WenJiao) - 小型竖向 macOS 桌面工具
+   一张连续宣纸：浅灰暖色纸面 + 细腻纸纹 + 墨字 + 朱砂点缀
    ========================================================================== */
 
 :root {
+  color-scheme: light;
+
   /* 动态全局字号比例 (0.9 ~ 1.3) */
   --font-scale: 1;
 
-  /* 宣纸暖色体系 */
-  --desk: #E8DDC3;            /* 浅色旧木桌底色（页面外层背景） */
-  --paper: #FAF3DF;           /* 核心宣纸主色（主容器背景） */
-  --paper-soft: #F5E9CC;      /* 次级宣纸/内衬柔色 */
-  --stage-bg: #F3E6C8;        /* 筊杯舞台底色 */
-  --ink: #302820;             /* 焦墨浓字（主标题与正文） */
-  --ink-secondary: #756856;   /* 次级墨色（说明、副标） */
-  --ink-muted: #9B8B73;       /* 淡墨（未激活标签、提示语） */
-  --cinnabar: #A73A2C;        /* 古朱砂红（主操作、印章、激活项） */
-  --cinnabar-dark: #842D23;   /* 深朱砂红（悬浮、按压、印章重线） */
-  --bronze: #987A4E;          /* 哑光铜色（铜钉空心圆、金属边线） */
-  --line: #DECDB0;            /* 宣纸淡褐接缝细线 */
-
-  /* 半透明轻薄纸片层级参数 */
-  --paper-card: rgba(255, 252, 244, 0.65);    /* 轻薄宣纸片卡片底色 */
-  --paper-card-focus: #FCF8EC;               /* 聚焦选中的实体纸片底色 */
-  --paper-recess: rgba(235, 224, 200, 0.45);   /* 宣纸浅凹槽底色 */
-  --paper-line: rgba(199, 179, 141, 0.5);      /* 极细浅茶褐宣纸边线 */
-  --paper-line-active: rgba(167, 58, 44, 0.4); /* 朱砂细线 */
-  --shadow-paper: 0 2px 6px rgba(73, 51, 38, 0.04);
-  --shadow-subtle: 0 1px 3px rgba(73, 51, 38, 0.03);
-
-  /* 克制圆角 */
-  --radius-container: 8px;
-  --radius-widget: 4px;
+  /* 宣纸浅灰暖色体系（低饱和、略带灰度） */
+  --paper: #F3F0E6;           /* 全窗唯一纸色 */
+  --ink: #2B2823;             /* 焦墨（较初版深约 10%） */
+  --ink-secondary: #665F55;   /* 次级墨色（深约 10%） */
+  --ink-muted: #8B8378;       /* 淡墨（深约 10%） */
+  --cinnabar: #A23A2D;        /* 朱砂 */
+  --cinnabar-dark: #7F2D24;   /* 深朱砂 */
+  --bronze: #92784E;          /* 哑光铜 */
+  --line: rgba(76, 65, 52, 0.16);      /* 纸面细线 */
+  --line-faint: rgba(76, 65, 52, 0.10); /* 更淡的分隔线 */
+  --cinnabar-wash: rgba(162, 58, 45, 0.06); /* 极淡朱砂底 */
 
   /* 宋体 / 明朝体字体族 */
   --font-serif: "Songti SC", "Source Han Serif SC", "Noto Serif SC", "STSong", "SimSun", "Songti", serif;
@@ -46,60 +35,110 @@
   -webkit-user-select: none;
 }
 
-/* 覆盖整个视口，彻底杜绝右侧空白 */
 html {
   width: 100%;
-  min-height: 100%;
-  background-color: var(--desk);
+  height: 100%;
+  background-color: var(--paper);
 }
 
 body {
   width: 100%;
-  min-height: 100vh;
+  height: 100vh;
   margin: 0;
-  padding: 24px 16px 40px;
-  background-color: var(--desk);
-  /* 宣纸温润漫射底衬 */
-  background-image: 
-    radial-gradient(ellipse at 50% 15%, rgba(255, 250, 235, 0.55) 0%, rgba(232, 221, 195, 0.85) 85%),
-    linear-gradient(180deg, #ECE2C9 0%, #DFD2B5 100%);
+  overflow: hidden;
+  background-color: var(--paper);
   color: var(--ink);
   font-family: var(--font-serif);
   -webkit-font-smoothing: antialiased;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  overflow-x: hidden;
 }
 
 /* ==========================================================================
-   主容器：设计基准宽度 820px，最大限制 900px，超过后居中不改内部布局
+   窗口即一张宣纸：整窗单一纸面，仅用留白 / 细线 / 字号 / 朱砂分层
    ========================================================================== */
 .app-window {
-  width: min(calc(100% - 32px), 820px);
-  max-width: 900px;
-  margin-inline: auto;
-  background: var(--paper);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-container);
-  box-shadow: 
-    0 8px 30px rgba(73, 51, 38, 0.07),
-    0 1px 4px rgba(73, 51, 38, 0.04);
+  position: relative;
+  width: 100%;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  position: relative;
+  background-color: var(--paper);
   overflow: hidden;
-  transition: width 0.3s ease;
 }
 
-/* 顶部标题栏 */
+/* 纸纤维：极淡的纵横细纤维（肉眼细看可见，第一眼几乎不可察） */
+.app-paper {
+  background-color: var(--paper);
+  background-image:
+    repeating-linear-gradient(
+      90deg,
+      rgba(118, 104, 82, 0.013) 0px,
+      rgba(118, 104, 82, 0.013) 1px,
+      rgba(118, 104, 82, 0) 1px,
+      rgba(118, 104, 82, 0) 5px
+    ),
+    repeating-linear-gradient(
+      0deg,
+      rgba(118, 104, 82, 0.007) 0px,
+      rgba(118, 104, 82, 0.007) 1px,
+      rgba(118, 104, 82, 0) 1px,
+      rgba(118, 104, 82, 0) 11px
+    );
+}
+
+/* 纸面细腻噪点（inline SVG feTurbulence，无外部图片） */
+.app-paper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.045;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='300'%20height='300'%3E%3Cfilter%20id='n'%3E%3CfeTurbulence%20type='fractalNoise'%20baseFrequency='0.85'%20numOctaves='3'%20stitchTiles='stitch'/%3E%3CfeColorMatrix%20type='saturate'%20values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA%20type='linear'%20slope='0'%20intercept='1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect%20width='300'%20height='300'%20filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 300px 300px;
+}
+
+/* 纸面之上的所有内容 */
+.app-window > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ==========================================================================
+   毛玻璃：极薄一层磨砂琉璃，压在宣纸之上（宣纸纹理仍隐约透出）
+   只用于少数组件制造层级：不做整页玻璃化，且不使用强折射 / 高光边 / 大面积白
+   ========================================================================== */
+.paper-glass {
+  background-color: rgba(255, 255, 255, 0.20);
+  border: 1px solid rgba(255, 255, 255, 0.30);
+  border-radius: 7px;
+  box-shadow:
+    0 4px 14px rgba(55, 45, 34, 0.045),
+    inset 0 1px 0 rgba(255, 255, 255, 0.20);
+}
+
+.paper-glass,
+.modal-box {
+  -webkit-backdrop-filter: blur(6px) saturate(1.03);
+  backdrop-filter: blur(6px) saturate(1.03);
+}
+
+/* 引擎不支持 backdrop-filter 时，自动退化为半透明白（不影响排版与可读性） */
+@supports (not (backdrop-filter: blur(1px))) and (not (-webkit-backdrop-filter: blur(1px))) {
+  .paper-glass {
+    background-color: rgba(255, 255, 255, 0.34);
+  }
+}
+
+/* 顶部：标题与工具 */
 .app-header {
-  padding: 14px 24px 12px;
+  flex: 0 0 auto;
+  height: 54px;
+  padding: 0 22px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid var(--line);
-  background: rgba(245, 233, 204, 0.35);
+  background: transparent;
 }
 
 .title-group {
@@ -109,9 +148,9 @@ body {
 
 .app-title {
   font-family: var(--font-serif);
-  font-size: calc(19px * var(--font-scale, 1));
+  font-size: calc((18px) * var(--font-scale, 1));
   font-weight: 600;
-  letter-spacing: 3px;
+  letter-spacing: 5px;
   color: var(--ink);
   transition: font-size 0.2s ease;
 }
@@ -119,115 +158,149 @@ body {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 4px;
 }
 
-/* 顶部轻薄纸片按钮 */
+/* 顶部工具：极轻一层玻璃 + 淡墨图标，hover 极淡朱砂 */
 .icon-btn {
-  background: rgba(250, 243, 223, 0.7);
-  border: 1px solid var(--paper-line);
-  color: var(--ink-secondary);
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius-widget);
+  background-color: rgba(255, 255, 255, 0.13);
+  border: 1px solid rgba(255, 255, 255, 0.20);
+  color: var(--ink-muted);
+  width: 30px;
+  height: 30px;
+  border-radius: 6px;
+  -webkit-backdrop-filter: blur(4px) saturate(1.02);
+  backdrop-filter: blur(4px) saturate(1.02);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: var(--shadow-subtle);
-  transition: all 0.2s ease;
+  transition: color 0.18s ease, background-color 0.18s ease;
 }
 
 .icon-btn:hover {
-  border-color: var(--cinnabar);
   color: var(--cinnabar);
-  background: #FAF3DF;
+  background-color: var(--cinnabar-wash);
 }
 
 .icon-btn.active {
-  color: var(--cinnabar);
-  border-color: var(--paper-line-active);
+  color: var(--ink-secondary);
 }
 
 .svg-icon {
   display: block;
 }
 
-/* 主交互区流式布局 */
+/* 主工作区：单列纵向 */
 .main-content {
+  flex: 1 1 auto;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   width: 100%;
 }
 
 /* ==========================================================================
-   模式选择器：浅米宣纸槽体与轻薄纸片选项
+   模式选择：轻文字页签（朱砂标题 + 短下划线 + 极淡朱砂 tint）
+   整体承载一层极薄毛玻璃，无大卡片无槽体
    ========================================================================== */
 .mode-selector-wrap {
-  padding: 12px 24px 6px;
+  flex: 0 0 auto;
+  margin: 2px 22px 0;
+  padding: 6px 12px 5px;
 }
 
-.mode-selector.segmented-control {
+.mode-selector {
   display: flex;
-  background: var(--paper-recess);
-  border: 1px solid var(--paper-line);
-  border-radius: var(--radius-widget);
-  padding: 4px;
-  gap: 6px;
+  align-items: flex-start;
 }
 
 .mode-tab {
-  flex: 1;
-  padding: 8px 14px;
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 2px 10px 4px;
   background: transparent;
-  border: 1px solid transparent;
-  border-radius: 3px;
-  color: var(--ink-muted);
+  border: none;
+  border-radius: 5px;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 3px;
+  gap: 5px;
   font-family: var(--font-serif);
-  transition: all 0.2s ease;
+  text-align: left;
+  transition: background-color 0.2s ease;
 }
 
-.mode-tab:hover {
-  color: var(--ink);
+.mode-tab + .mode-tab {
+  padding-left: 18px;
+  border-left: 1px solid var(--line-faint);
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
 }
 
+/* 选中的模式：只给极淡朱砂 tint，不做独立粗边框 */
 .mode-tab.active {
-  background: var(--paper);
-  border: 1px solid var(--paper-line-active);
-  color: var(--ink);
-  box-shadow: var(--shadow-subtle);
+  background-color: rgba(162, 58, 45, 0.035);
 }
 
 .mode-name {
-  font-size: calc(13px * var(--font-scale, 1));
+  position: relative;
+  font-size: calc((15px) * var(--font-scale, 1));
   font-weight: 600;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
+  color: var(--ink-muted);
+  padding-bottom: 7px;
+  transition: color 0.2s ease;
+}
+
+.mode-name::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 22px;
+  height: 2px;
+  background-color: var(--cinnabar);
+  opacity: 0;
+  transform: scaleX(0.35);
+  transform-origin: left center;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.mode-tab:hover .mode-name {
+  color: var(--ink-secondary);
+}
+
+.mode-tab.active .mode-name {
+  color: var(--cinnabar);
+}
+
+.mode-tab.active .mode-name::after {
+  opacity: 1;
+  transform: scaleX(1);
 }
 
 .mode-sub {
-  font-size: calc(11px * var(--font-scale, 1));
-  color: var(--ink-secondary);
+  font-size: calc((12px) * var(--font-scale, 1));
+  line-height: 1.55;
+  color: var(--ink-muted);
   font-family: var(--font-serif);
-  line-height: 1.4;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.4px;
 }
 
 .mode-tab.active .mode-sub {
-  color: var(--cinnabar);
+  color: var(--ink-secondary);
 }
 
 /* 传统模式下的连续三圣配置行 */
 .triple-option-bar {
-  padding: 2px 24px 8px;
+  flex: 0 0 auto;
+  padding: 2px 22px 2px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: calc(12px * var(--font-scale, 1));
+  font-size: calc((13px) * var(--font-scale, 1));
   color: var(--ink-secondary);
 }
 
@@ -238,70 +311,65 @@ body {
 .checkbox-label {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
   cursor: pointer;
 }
 
 .checkbox-label input {
   accent-color: var(--cinnabar);
-  width: 14px;
-  height: 14px;
+  width: 13px;
+  height: 13px;
 }
 
 .bias-tag {
-  color: var(--cinnabar);
-  font-size: calc(11px * var(--font-scale, 1));
+  color: var(--ink-muted);
+  font-size: calc((12px) * var(--font-scale, 1));
+  letter-spacing: 0.5px;
 }
 
 /* ==========================================================================
-   甲乙选项：轻薄纸签卡片 (Side-by-side 双列)
+   甲乙选项：两块极薄毛玻璃纸签（存在感仅比纸面高一点，不做成表单框）
    ========================================================================== */
 .options-panel {
-  padding: 4px 24px 12px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
+  flex: 0 0 auto;
+  padding: 5px 22px 2px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  background: transparent;
 }
 
 .input-card {
-  background: var(--paper-card);
-  border: 1px solid var(--paper-line);
-  border-radius: var(--radius-widget);
-  box-shadow: var(--shadow-subtle);
-  padding: 8px 14px;
+  padding: 4px 12px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-  transition: all 0.2s ease;
-}
-
-.input-card:focus-within {
-  border-color: var(--cinnabar);
-  background: var(--paper-card-focus);
-  box-shadow: 0 2px 8px rgba(167, 58, 44, 0.08);
+  gap: 1px;
 }
 
 .input-header {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
 }
 
+/* 朱砂小印章「甲」「乙」 */
 .seal-tag {
   font-family: var(--font-serif);
-  font-size: calc(11px * var(--font-scale, 1));
+  font-size: calc((11px) * var(--font-scale, 1));
   font-weight: 600;
-  color: #fff;
+  color: #F7F3E8;
   background: var(--cinnabar);
   border-radius: 2px;
-  padding: 0px 5px;
+  padding: 1px 5px 2px;
   line-height: 1.3;
+  letter-spacing: 1px;
 }
 
 .input-desc {
-  font-size: calc(11px * var(--font-scale, 1));
+  font-size: calc((12px) * var(--font-scale, 1));
   color: var(--ink-muted);
-  letter-spacing: 0.5px;
+  letter-spacing: 1px;
+  transition: color 0.2s ease;
 }
 
 .option-input {
@@ -311,9 +379,10 @@ body {
   outline: none;
   font-family: var(--font-serif);
   color: var(--ink);
-  font-size: calc(13px * var(--font-scale, 1));
+  font-size: calc((15px) * var(--font-scale, 1));
+  letter-spacing: 0.5px;
   width: 100%;
-  padding: 3px 0;
+  padding: 0 0 2px;
   transition: border-color 0.2s ease;
 }
 
@@ -325,18 +394,23 @@ body {
   color: var(--ink-muted);
 }
 
+.input-card:focus-within .input-desc {
+  color: var(--cinnabar);
+}
+
 /* ==========================================================================
-   核心 3D 投掷台：宣纸温润案面
+   筊杯舞台：与宣纸连续（无底色、无边框），仅中心微亮
+   —— 3D 几何、材质、阴影、动画关键帧一律保持原样 ——
    ========================================================================== */
 .stage-wrapper {
   position: relative;
+  flex: 0 1 auto;
   width: 100%;
-  height: 220px;
-  background-color: var(--stage-bg);
-  background-image: 
-    radial-gradient(circle at 50% 50%, #FAF2DE 0%, #EFE1C3 85%);
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
+  height: 246px;
+  min-height: 186px;
+  margin-top: 2px;
+  background-color: transparent;
+  background-image: radial-gradient(ellipse 62% 52% at 50% 50%, rgba(255, 253, 247, 0.72) 0%, rgba(255, 253, 247, 0) 72%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -469,24 +543,22 @@ body {
   transform: translateZ(0px);
 }
 
-/* 案上状态标牌与铜钉进度 */
+/* 案上：三圣进度（上缘）与状态墨字（下缘），直接写在纸面 */
 .stage-overlay {
   position: absolute;
-  top: 8px;
-  left: 0;
-  right: 0;
+  inset: 0;
+  padding: 15px 0 12px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 5px;
+  justify-content: space-between;
   pointer-events: none;
   z-index: 10;
 }
 
-/* 三圣状态：3 个铜褐空心圆 / 朱砂实心圆 */
 .progress-dots {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   align-items: center;
 }
 
@@ -502,64 +574,63 @@ body {
 .dot.active {
   background: var(--cinnabar);
   border-color: var(--cinnabar);
-  box-shadow: 0 0 5px rgba(167, 58, 44, 0.6);
   transform: scale(1.15);
 }
 
-/* 案上状态标签：温润纸签 */
+/* 状态墨字：无方框、无底色 */
 .status-badge {
-  background: rgba(250, 243, 223, 0.9);
-  border: 1px solid var(--paper-line);
-  padding: 3px 14px;
-  border-radius: 3px;
-  font-size: calc(12px * var(--font-scale, 1));
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  font-size: calc((13px) * var(--font-scale, 1));
   font-family: var(--font-serif);
-  color: var(--ink);
-  box-shadow: var(--shadow-subtle);
-  transition: all 0.25s ease;
+  color: var(--ink-secondary);
+  letter-spacing: 1.5px;
+  transition: color 0.25s ease;
 }
 
 .status-badge.highlight {
-  border-color: var(--paper-line-active);
   color: var(--cinnabar);
-  background: rgba(255, 245, 238, 0.95);
 }
 
 /* ==========================================================================
-   控制区域：朱砂主按钮与次级纸签
+   掷杯：全页唯一大色块（朱砂实体按钮，微内高光，无发光）
    ========================================================================== */
 .controls-panel {
-  padding: 12px 24px 14px;
+  flex: 0 0 auto;
+  padding: 6px 22px 0;
   display: flex;
   flex-direction: column;
   gap: 6px;
   align-items: center;
+  background: transparent;
 }
 
-/* 朱砂“掷杯”按钮：实体深朱砂，微弱内高光与立体感 */
 .btn-primary {
-  width: 100%;
-  max-width: 280px;
-  padding: 9px 20px;
+  display: block;
+  width: 74%;
+  max-width: 360px;
+  height: 48px;
+  padding: 0 18px;
   font-family: var(--font-serif);
-  font-size: calc(15px * var(--font-scale, 1));
+  font-size: calc((16px) * var(--font-scale, 1));
   font-weight: 600;
-  letter-spacing: 4px;
+  letter-spacing: 6px;
+  text-indent: 6px;
   background: var(--cinnabar);
-  color: #fff;
+  color: #F7F3E8;
   border: 1px solid var(--cinnabar-dark);
-  border-radius: var(--radius-widget);
+  border-radius: 3px;
   cursor: pointer;
-  box-shadow: 
-    0 3px 10px rgba(167, 58, 44, 0.25),
-    inset 0 1px 0 rgba(255, 255, 255, 0.25);
-  transition: all 0.2s ease;
-  text-align: center;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 2px 6px rgba(48, 44, 39, 0.10);
+  transition: background-color 0.18s ease, transform 0.12s ease;
 }
 
 .btn-primary:hover:not(:disabled) {
   background: var(--cinnabar-dark);
-  transform: translateY(-1px);
 }
 
 .btn-primary:active:not(:disabled) {
@@ -567,31 +638,32 @@ body {
 }
 
 .btn-primary:disabled {
-  opacity: 0.5;
+  opacity: 0.55;
   cursor: not-allowed;
-  transform: none;
   box-shadow: none;
 }
 
-/* “开始下一轮”：低视觉权重纸签描边按钮 */
+/* 「开始下一轮」：低视觉权重居中小按钮 */
 .btn-secondary-action {
-  width: 100%;
-  max-width: 220px;
-  padding: 6px 14px;
+  display: block;
+  width: 58%;
+  max-width: 260px;
+  height: 44px;
   font-family: var(--font-serif);
-  font-size: calc(13px * var(--font-scale, 1));
-  background: rgba(250, 243, 223, 0.6);
-  border: 1px solid var(--paper-line);
-  border-radius: var(--radius-widget);
-  color: var(--ink);
+  font-size: calc((14px) * var(--font-scale, 1));
+  letter-spacing: 3px;
+  text-indent: 3px;
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  color: var(--ink-secondary);
   cursor: pointer;
-  transition: all 0.2s ease;
-  text-align: center;
+  transition: color 0.18s ease, border-color 0.18s ease;
 }
 
 .btn-secondary-action:hover {
-  background: #FAF3DF;
-  border-color: var(--ink-secondary);
+  border-color: var(--cinnabar);
+  color: var(--cinnabar);
 }
 
 .btn-secondary-action.hidden {
@@ -599,9 +671,9 @@ body {
 }
 
 .btn-tip {
-  font-size: calc(11px * var(--font-scale, 1));
+  font-size: calc((12px) * var(--font-scale, 1));
   color: var(--ink-muted);
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
 }
 
 .btn-tip.hidden {
@@ -609,40 +681,84 @@ body {
 }
 
 /* ==========================================================================
-   终局决策卡：文书风格纸签 (朱砂细框、定字印章、自然排版)
+   定案区：固定高度 + 稍明显一层毛玻璃（页面不跳动）
    ========================================================================== */
-.decision-banner {
-  margin: 10px 24px 4px;
-  padding: 12px 18px;
-  background: rgba(255, 250, 240, 0.92);
-  border: 1px solid var(--paper-line-active);
-  border-radius: var(--radius-widget);
-  box-shadow: 
-    0 2px 8px rgba(73, 51, 38, 0.04),
-    0 1px 2px rgba(73, 51, 38, 0.02);
+.result-area {
+  position: relative;
+  flex: 0 0 auto;
+  height: 52px;
+  margin: 6px 22px 0;
+  /* 定案区允许比其它玻璃稍微明显一点，边框带一丝朱砂 */
+  background-color: rgba(255, 255, 255, 0.26);
+  border-color: rgba(162, 58, 45, 0.16);
+  -webkit-backdrop-filter: blur(9px) saturate(1.04);
+  backdrop-filter: blur(9px) saturate(1.04);
   display: flex;
   align-items: center;
-  gap: 16px;
+  justify-content: center;
+}
+
+/* 投掷前：极淡的未定空状态 */
+.result-placeholder {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0.55;
+}
+
+/* 投掷后：定案判词出现时，淡空状态让位（纯 CSS 联动，无需 JS 参与） */
+.decision-banner.win-a + .result-placeholder,
+.decision-banner.win-b + .result-placeholder,
+.decision-banner[style*="flex"] + .result-placeholder {
+  display: none;
+}
+
+.ghost-seal {
+  width: 30px;
+  height: 30px;
+  border: 1px dashed var(--line);
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: calc((16px) * var(--font-scale, 1));
+  font-weight: 600;
+  color: var(--ink-muted);
+}
+
+.ghost-text {
+  font-size: calc((12px) * var(--font-scale, 1));
+  color: var(--ink-muted);
+  letter-spacing: 2px;
+}
+
+/* 投掷后：朱砂定印与判词（玻璃纸面上的定案） */
+.decision-banner {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
   animation: fadeIn 0.25s ease-out;
 }
 
-/* 朱砂“定”印章 */
 .banner-seal {
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   border: 2px solid var(--cinnabar);
   border-radius: 3px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 242, 235, 0.9);
-  box-shadow: 0 0 0 1px var(--cinnabar-dark);
+  box-shadow: 0 0 0 1px rgba(162, 58, 45, 0.28);
   flex-shrink: 0;
 }
 
 .seal-char {
   font-family: var(--font-serif);
-  font-size: calc(20px * var(--font-scale, 1));
+  font-size: calc((19px) * var(--font-scale, 1));
   font-weight: 700;
   color: var(--cinnabar);
   line-height: 1;
@@ -655,40 +771,49 @@ body {
 }
 
 .banner-reason {
-  font-size: calc(11px * var(--font-scale, 1));
+  font-size: calc((12px) * var(--font-scale, 1));
   color: var(--cinnabar);
-  letter-spacing: 0.5px;
+  letter-spacing: 1.5px;
 }
 
 .banner-result {
-  font-size: calc(15px * var(--font-scale, 1));
+  font-size: calc((15px) * var(--font-scale, 1));
   font-weight: 600;
   color: var(--ink);
   letter-spacing: 0.5px;
 }
 
 /* ==========================================================================
-   筊册记录：宣纸账册风格 (横跨全宽，细线相隔)
+   筊册记录：占据窗口剩余高度，仅列表内部滚动
    ========================================================================== */
 .history-drawer {
-  border-top: 1px solid var(--line);
-  padding: 12px 24px 18px;
-  background: rgba(245, 233, 204, 0.2);
+  flex: 1 1 0%;
+  min-height: 96px;
+  margin-top: 2px;
+  padding: 8px 22px 10px;
+  border-top: 1px solid var(--line-faint);
+  display: flex;
+  flex-direction: column;
+  background: transparent;
 }
 
 .history-header {
+  flex: 0 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 8px;
-  padding-bottom: 6px;
-  border-bottom: 1px solid var(--line);
+  padding: 4px 7px 5px;
+  margin-bottom: 4px;
+  border-radius: 5px;
+  /* 只给「筊册记录 / 导出 / 清空」这一行极轻的半透明底，正文列表不卡片化 */
+  background-color: rgba(255, 255, 255, 0.16);
+  border-bottom: 1px solid var(--line-faint);
 }
 
 .history-title {
-  font-size: calc(13px * var(--font-scale, 1));
+  font-size: calc((13px) * var(--font-scale, 1));
   font-weight: 600;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
   color: var(--ink-secondary);
 }
 
@@ -703,26 +828,37 @@ body {
   border: none;
   color: var(--ink-muted);
   font-family: var(--font-serif);
-  font-size: calc(11px * var(--font-scale, 1));
+  font-size: calc((12px) * var(--font-scale, 1));
+  letter-spacing: 0.8px;
   cursor: pointer;
   padding: 2px 4px;
-  transition: color 0.2s;
+  transition: color 0.18s;
 }
 
 .text-btn:hover {
-  color: var(--ink);
+  color: var(--cinnabar);
+}
+
+/* 簿册为空时，导出与清空不可用（避免浏览器原生对话框） */
+.text-btn:disabled,
+.text-btn:disabled:hover {
+  color: var(--ink-muted);
+  opacity: 0.42;
+  cursor: default;
 }
 
 .sep-dot {
   color: var(--line);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .history-list {
-  max-height: 120px;
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  padding-right: 4px;
 }
 
 .history-list::-webkit-scrollbar {
@@ -735,12 +871,14 @@ body {
 }
 
 .history-row {
+  flex: 0 0 auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 5px 2px;
-  font-size: calc(12px * var(--font-scale, 1));
-  border-bottom: 1px dashed rgba(222, 205, 176, 0.7);
+  gap: 8px;
+  padding: 3px 2px;
+  font-size: calc((12px) * var(--font-scale, 1));
+  border-bottom: 1px dashed var(--line-faint);
   color: var(--ink-secondary);
   font-family: var(--font-serif);
 }
@@ -750,29 +888,35 @@ body {
 }
 
 .history-col-time {
-  width: 55px;
+  width: 44px;
+  flex: 0 0 auto;
   font-family: var(--font-sans);
   color: var(--ink-muted);
-  font-size: calc(11px * var(--font-scale, 1));
+  font-size: calc((11px) * var(--font-scale, 1));
 }
 
 .history-col-desc {
-  flex: 1;
+  flex: 1 1 auto;
+  min-width: 0;
   color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .history-col-badge {
+  flex: 0 0 auto;
   color: var(--bronze);
-  font-size: calc(11px * var(--font-scale, 1));
+  font-size: calc((11px) * var(--font-scale, 1));
   font-family: var(--font-sans);
 }
 
 .history-row.final-decision {
   color: var(--ink);
-  background: rgba(167, 58, 44, 0.04);
-  padding: 6px 4px;
-  margin: 2px 0;
-  border-bottom: 1px solid rgba(167, 58, 44, 0.2);
+  background: var(--cinnabar-wash);
+  padding: 3px 4px;
+  margin: 1px 0;
+  border-bottom: 1px solid rgba(162, 58, 45, 0.18);
 }
 
 .history-col-desc.final-text {
@@ -784,7 +928,7 @@ body {
   display: inline-block;
   border: 1px solid var(--cinnabar);
   color: var(--cinnabar);
-  font-size: 10px;
+  font-size: 11px;
   padding: 0 3px;
   border-radius: 2px;
   margin-right: 5px;
@@ -792,15 +936,17 @@ body {
 }
 
 .history-empty {
+  margin: auto;
   text-align: center;
-  padding: 12px 0;
+  padding: 8px 0;
   color: var(--ink-muted);
-  font-size: calc(12px * var(--font-scale, 1));
-  letter-spacing: 1px;
+  font-size: calc((13px) * var(--font-scale, 1));
+  letter-spacing: 1.5px;
+  opacity: 0.85;
 }
 
 /* ==========================================================================
-   弹窗浮层与释例数学区域
+   浮层：纸面文书（无玻璃、无模糊，仅墨色压暗）
    ========================================================================== */
 .modal-overlay {
   position: absolute;
@@ -808,13 +954,11 @@ body {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(48, 39, 31, 0.35);
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(3px);
+  background: rgba(48, 44, 39, 0.30);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 22px;
   z-index: 100;
   opacity: 0;
   pointer-events: none;
@@ -827,32 +971,45 @@ body {
 }
 
 .modal-box {
-  background: var(--paper);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-widget);
+  background-color: rgba(255, 255, 255, 0.60);
+  border: 1px solid rgba(255, 255, 255, 0.58);
+  border-radius: 7px;
   padding: 18px 20px;
   width: 100%;
-  max-width: 400px;
-  box-shadow: 0 10px 24px rgba(48, 39, 31, 0.12);
+  max-width: 420px;
+  max-height: calc(100vh - 56px);
+  overflow-y: auto;
+  box-shadow: 0 16px 40px rgba(48, 44, 39, 0.20);
+  -webkit-backdrop-filter: blur(12px) saturate(1.03);
+  backdrop-filter: blur(12px) saturate(1.03);
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
+.modal-box::-webkit-scrollbar {
+  width: 3px;
+}
+
+.modal-box::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 2px;
+}
+
 .modal-title {
   font-family: var(--font-serif);
-  font-size: calc(15px * var(--font-scale, 1));
+  font-size: calc((17px) * var(--font-scale, 1));
   font-weight: 600;
-  letter-spacing: 1.5px;
+  letter-spacing: 2px;
   color: var(--ink);
   padding-bottom: 6px;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--line-faint);
 }
 
 .modal-body {
-  font-size: calc(12px * var(--font-scale, 1));
+  font-size: calc((14px) * var(--font-scale, 1));
   color: var(--ink-secondary);
-  line-height: 1.6;
+  line-height: 1.65;
 }
 
 .intro-p {
@@ -863,37 +1020,35 @@ body {
 .rule-block {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 5px;
   margin: 8px 0;
-  padding: 6px 10px;
-  background: var(--paper-soft);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-widget);
+  padding: 2px 0 2px 10px;
+  border-left: 2px solid var(--line);
+  background: transparent;
 }
 
 .rule-row {
   display: flex;
   gap: 8px;
-  font-size: calc(11px * var(--font-scale, 1));
+  font-size: calc((13px) * var(--font-scale, 1));
 }
 
 .rule-name {
   color: var(--cinnabar);
   font-weight: 600;
   width: 40px;
+  flex: 0 0 auto;
 }
 
 .rule-detail {
   color: var(--ink);
 }
 
-/* 完整概率和数学原理区域 (仅在说明弹窗展示) */
+/* 完整概率与数学原理 (仅在说明弹窗展示) */
 .rule-math-section {
   margin-top: 10px;
-  padding: 8px 12px;
-  background: var(--paper-soft);
-  border: 1px solid var(--paper-line);
-  border-radius: var(--radius-widget);
+  padding: 8px 0 4px;
+  border-top: 1px solid var(--line-faint);
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -901,35 +1056,34 @@ body {
 
 .math-mode-title {
   font-family: var(--font-serif);
-  font-size: calc(12px * var(--font-scale, 1));
+  font-size: calc((14px) * var(--font-scale, 1));
   font-weight: 600;
   color: var(--cinnabar);
   letter-spacing: 0.5px;
 }
 
 .math-p {
-  font-size: calc(11px * var(--font-scale, 1));
+  font-size: calc((13px) * var(--font-scale, 1));
   color: var(--ink);
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 .math-formula {
-  font-size: calc(11px * var(--font-scale, 1));
+  font-size: calc((13px) * var(--font-scale, 1));
   font-weight: 600;
   color: var(--ink);
-  padding: 2px 8px;
-  background: rgba(250, 243, 223, 0.85);
-  border-left: 2.5px solid var(--cinnabar);
+  padding: 2px 0 2px 10px;
+  border-left: 2px solid var(--cinnabar);
   margin: 3px 0;
 }
 
 .math-sub {
-  font-size: calc(11px * var(--font-scale, 1));
+  font-size: calc((13px) * var(--font-scale, 1));
   color: var(--ink-muted);
 }
 
 /* ==========================================================================
-   案台设置浮层排版 (Settings Modal)
+   案台设置浮层
    ========================================================================== */
 .settings-body {
   display: flex;
@@ -940,9 +1094,9 @@ body {
 .setting-item {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 7px;
   padding-bottom: 10px;
-  border-bottom: 1px dashed rgba(222, 205, 176, 0.6);
+  border-bottom: 1px dashed var(--line-faint);
 }
 
 .setting-item:last-child {
@@ -964,34 +1118,34 @@ body {
 
 .setting-name {
   font-family: var(--font-serif);
-  font-size: calc(13px * var(--font-scale, 1));
+  font-size: calc((15px) * var(--font-scale, 1));
   font-weight: 600;
   color: var(--ink);
 }
 
 .setting-desc {
-  font-size: calc(11px * var(--font-scale, 1));
+  font-size: calc((13px) * var(--font-scale, 1));
   color: var(--ink-muted);
 }
 
-/* 字号步进控制器 */
+/* 字号步进 */
 .font-size-control {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: var(--paper-recess);
-  border: 1px solid var(--paper-line);
-  border-radius: var(--radius-widget);
+  background: transparent;
+  border: 1px solid var(--line-faint);
+  border-radius: 3px;
   padding: 3px 6px;
 }
 
 .font-btn {
-  background: var(--paper);
-  border: 1px solid var(--paper-line);
-  border-radius: 3px;
-  color: var(--ink);
+  background: transparent;
+  border: 1px solid var(--line-faint);
+  border-radius: 2px;
+  color: var(--ink-secondary);
   font-family: var(--font-serif);
-  font-size: calc(12px * var(--font-scale, 1));
+  font-size: calc((13px) * var(--font-scale, 1));
   font-weight: 600;
   width: 36px;
   height: 26px;
@@ -999,8 +1153,7 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: var(--shadow-subtle);
-  transition: all 0.2s ease;
+  transition: color 0.18s ease, border-color 0.18s ease;
 }
 
 .font-btn:hover:not(:disabled) {
@@ -1015,32 +1168,32 @@ body {
 
 .font-scale-tag {
   font-family: var(--font-serif);
-  font-size: calc(12px * var(--font-scale, 1));
+  font-size: calc((13px) * var(--font-scale, 1));
   font-weight: 600;
   color: var(--ink-secondary);
 }
 
-/* 设置分段按钮组 */
+/* 设置分段文字页签 */
 .setting-segmented {
   display: flex;
-  background: var(--paper-recess);
-  border: 1px solid var(--paper-line);
-  border-radius: var(--radius-widget);
+  background: transparent;
+  border: 1px solid var(--line-faint);
+  border-radius: 3px;
   padding: 3px;
-  gap: 4px;
+  gap: 3px;
 }
 
 .setting-tab {
   flex: 1;
   padding: 5px 8px;
   background: transparent;
-  border: 1px solid transparent;
-  border-radius: 3px;
+  border: none;
+  border-radius: 2px;
   color: var(--ink-muted);
   cursor: pointer;
   font-family: var(--font-serif);
-  font-size: calc(12px * var(--font-scale, 1));
-  transition: all 0.2s ease;
+  font-size: calc((13px) * var(--font-scale, 1));
+  transition: color 0.18s ease, background-color 0.18s ease;
   text-align: center;
 }
 
@@ -1049,14 +1202,12 @@ body {
 }
 
 .setting-tab.active {
-  background: var(--paper);
-  border: 1px solid var(--paper-line-active);
-  color: var(--ink);
+  color: var(--cinnabar);
   font-weight: 600;
-  box-shadow: var(--shadow-subtle);
+  background-color: var(--cinnabar-wash);
 }
 
-/* 古风开关 Slider */
+/* 开关 */
 .setting-switch {
   position: relative;
   display: inline-block;
@@ -1089,7 +1240,7 @@ body {
   bottom: 3px;
   background-color: var(--paper);
   border-radius: 50%;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  box-shadow: 0 1px 2px rgba(48, 44, 39, 0.25);
   transition: .3s;
 }
 
@@ -1109,25 +1260,37 @@ body {
 }
 
 .btn-modal-cancel {
-  padding: 5px 14px;
-  background: var(--paper);
+  padding: 6px 16px;
+  background: transparent;
   border: 1px solid var(--line);
-  border-radius: var(--radius-widget);
-  color: var(--ink);
+  border-radius: 3px;
+  color: var(--ink-secondary);
   font-family: var(--font-serif);
-  font-size: calc(12px * var(--font-scale, 1));
+  font-size: calc((14px) * var(--font-scale, 1));
+  letter-spacing: 1px;
   cursor: pointer;
+  transition: color 0.18s ease, border-color 0.18s ease;
+}
+
+.btn-modal-cancel:hover {
+  color: var(--cinnabar);
+  border-color: var(--cinnabar);
 }
 
 .btn-modal-confirm {
-  padding: 5px 14px;
+  padding: 6px 16px;
   background: var(--cinnabar);
   border: 1px solid var(--cinnabar-dark);
-  border-radius: var(--radius-widget);
-  color: #fff;
+  border-radius: 3px;
+  color: #F7F3E8;
   font-family: var(--font-serif);
-  font-size: calc(12px * var(--font-scale, 1));
+  font-size: calc((14px) * var(--font-scale, 1));
+  letter-spacing: 1px;
   cursor: pointer;
+}
+
+.btn-modal-confirm:hover {
+  background: var(--cinnabar-dark);
 }
 
 @keyframes fadeIn {
@@ -1136,54 +1299,20 @@ body {
 }
 
 /* ==========================================================================
-   手机端自适应 (<600px 紧凑排版)
+   极矮窗口（浏览器预览等非标准场景）下的收敛
    ========================================================================== */
-@media (max-width: 600px) {
-  body {
-    padding: 10px 0 20px;
-  }
+@media (max-height: 700px) {
+  .app-header { height: 46px; }
+  .stage-wrapper { height: 208px; }
+  .result-area { height: 52px; }
+}
 
-  .app-window {
-    width: calc(100% - 20px);
-    border-radius: 6px;
-  }
+@media (max-width: 520px) {
+  .app-header,
+  .mode-selector-wrap,
+  .options-panel,
+  .controls-panel,
+  .history-drawer { padding-inline: 16px; }
 
-  .app-header {
-    padding: 10px 14px 8px;
-  }
-
-  .mode-selector-wrap {
-    padding: 8px 14px 4px;
-  }
-
-  .mode-selector.segmented-control {
-    flex-direction: column;
-    gap: 4px;
-  }
-
-  .options-panel {
-    padding: 4px 14px 8px;
-    grid-template-columns: 1fr;
-    gap: 8px;
-  }
-
-  .triple-option-bar {
-    padding: 2px 14px 6px;
-  }
-
-  .stage-wrapper {
-    height: 190px;
-  }
-
-  .controls-panel {
-    padding: 10px 14px;
-  }
-
-  .decision-banner {
-    margin: 8px 14px 2px;
-  }
-
-  .history-drawer {
-    padding: 10px 14px 14px;
-  }
+  .result-area { margin-inline: 16px; }
 }

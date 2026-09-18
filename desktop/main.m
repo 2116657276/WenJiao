@@ -9,32 +9,23 @@
 @implementation AppDelegate
 
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification {
-    // 理想宽度约 820px，高度约 760px
-    NSRect frame = NSMakeRect(0, 0, 820, 760);
+    // 小型竖向桌面工具窗口：内容区 560 × 780（约占 Mac 屏幕四分之一稍多）
+    NSRect frame = NSMakeRect(0, 0, 560, 780);
+    // 正常 macOS 原生标题栏：红黄绿系统按钮，标题栏可拖动；固定尺寸，不可缩放
     NSWindowStyleMask style = NSWindowStyleMaskTitled |
                               NSWindowStyleMaskClosable |
-                              NSWindowStyleMaskMiniaturizable |
-                              NSWindowStyleMaskResizable |
-                              NSWindowStyleMaskFullSizeContentView;
+                              NSWindowStyleMaskMiniaturizable;
 
     self.window = [[NSWindow alloc] initWithContentRect:frame
                                               styleMask:style
                                                 backing:NSBackingStoreBuffered
                                                   defer:NO];
     [self.window setTitle:@"问筊"];
-    [self.window setTitlebarAppearsTransparent:YES];
-    [self.window setTitleVisibility:NSWindowTitleHidden];
-    [self.window setMovableByWindowBackground:YES];
-
-    // 窗口尺寸限制：最小 680px，最大 960px，禁止无限拉宽与最大化
-    [self.window setMinSize:NSMakeSize(680, 620)];
-    [self.window setMaxSize:NSMakeSize(960, 920)];
-    [[self.window standardWindowButton:NSWindowZoomButton] setEnabled:NO];
 
     [self.window center];
     [self.window setDelegate:self];
-    // 浅木案桌面底色 #E8DDC3
-    [self.window setBackgroundColor:[NSColor colorWithRed:0.91 green:0.87 blue:0.76 alpha:1.0]];
+    // 宣纸浅暖底色 #F3F0E6
+    [self.window setBackgroundColor:[NSColor colorWithRed:243.0/255.0 green:240.0/255.0 blue:230.0/255.0 alpha:1.0]];
 
     WKWebViewConfiguration *config = [[WKWebViewConfiguration alloc] init];
     [config.preferences setValue:@YES forKey:@"developerExtrasEnabled"];
@@ -76,7 +67,7 @@
         NSURL *baseDir = [targetURL URLByDeletingLastPathComponent];
         [self.webView loadFileURL:targetURL allowingReadAccessToURL:baseDir];
     } else {
-        NSString *err = @"<html><body style='color:#302820;background:#E8DDC3;padding:20px;font-family:serif;'><h3>未能加载 index.html</h3></body></html>";
+        NSString *err = @"<html><body style='color:#302C27;background:#F3F0E6;padding:20px;font-family:serif;'><h3>未能加载 index.html</h3></body></html>";
         [self.webView loadHTMLString:err baseURL:nil];
     }
 
